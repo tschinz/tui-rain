@@ -60,6 +60,10 @@ Example:
 tui-rain-cli --intensity 10 --speed 2 --color green
 ```
 
+## Changelog
+
+See [CHANGELOG.md](CHANGELOG.md) for a list of changes in each version of the CLI tool.
+
 ## Contributing
 
 Contributions are welcome! Please fork the repository and submit a pull request with your changes. Ensure that your code adheres to the existing style and includes tests for any new functionality.
