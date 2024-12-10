@@ -4,7 +4,7 @@ use std::time::Duration;
 
 use clap::Parser;
 use std::error::Error;
-use tui_rain::{CharacterSet, Rain, RainDensity, RainSpeed};
+use tui_rain_cli::{CharacterSet, Rain, RainDensity, RainSpeed};
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
