@@ -14,6 +14,9 @@ async fn main() -> Result<(), Box<dyn Error>> {
     sparseness: args.density.unwrap(),
   };
   let rain_speed = RainSpeed::Absolute { speed: args.speed.unwrap() };
+  let message_speed = RainSpeed::Absolute {
+    speed: args.message_speed.unwrap(),
+  };
 
   let rain_speed_variance = args.variance_speed.unwrap_or(0.5);
   let tail_lifespan = Duration::from_millis(args.lifespan_tail.unwrap_or(250));
@@ -28,6 +31,9 @@ async fn main() -> Result<(), Box<dyn Error>> {
           .with_color(args.color.unwrap())
           .with_head_color(args.head_color.unwrap())
           .with_bold_dim_effect(args.effect_dim.unwrap())
+          .with_message(args.message.as_ref().unwrap().as_str())
+          .with_message_color(args.message_color.unwrap())
+          .with_message_speed(message_speed)
       }))
       .await
     }
@@ -41,6 +47,9 @@ async fn main() -> Result<(), Box<dyn Error>> {
           .with_color(args.color.unwrap())
           .with_head_color(args.head_color.unwrap())
           .with_bold_dim_effect(args.effect_dim.unwrap())
+          .with_message(args.message.as_ref().unwrap_or(&String::from("")).as_str())
+          .with_message_color(args.message_color.unwrap())
+          .with_message_speed(message_speed)
       }))
       .await
     }
@@ -54,6 +63,9 @@ async fn main() -> Result<(), Box<dyn Error>> {
           .with_color(args.color.unwrap())
           .with_head_color(args.head_color.unwrap())
           .with_bold_dim_effect(args.effect_dim.unwrap())
+          .with_message(args.message.as_ref().unwrap_or(&String::from("")).as_str())
+          .with_message_color(args.message_color.unwrap())
+          .with_message_speed(message_speed)
       }))
       .await
     }
@@ -68,6 +80,9 @@ async fn main() -> Result<(), Box<dyn Error>> {
           .with_head_color(args.head_color.unwrap())
           .with_bold_dim_effect(args.effect_dim.unwrap())
           .with_character_set(CharacterSet::Explicit { options: vec!['0', '1'] })
+          .with_message(args.message.as_ref().unwrap_or(&String::from("")).as_str())
+          .with_message_color(args.message_color.unwrap())
+          .with_message_speed(message_speed)
       }))
       .await
     }
@@ -81,6 +96,9 @@ async fn main() -> Result<(), Box<dyn Error>> {
           .with_color(args.color.unwrap())
           .with_head_color(args.head_color.unwrap())
           .with_bold_dim_effect(args.effect_dim.unwrap())
+          .with_message(args.message.as_ref().unwrap_or(&String::from("")).as_str())
+          .with_message_color(args.message_color.unwrap())
+          .with_message_speed(message_speed)
       }))
       .await
     }

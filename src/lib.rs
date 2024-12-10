@@ -127,6 +127,9 @@ pub struct Rain {
   bold_dim_effect: bool,
   noise_interval: Duration,
   character_set: CharacterSet,
+  message: String,
+  message_color: Color,
+  message_speed: RainSpeed,
 }
 
 impl Rain {
@@ -144,6 +147,9 @@ impl Rain {
       bold_dim_effect: true,
       noise_interval: Duration::from_secs(5),
       character_set: CharacterSet::HalfKana,
+      message: String::from(""),
+      message_color: Color::Green,
+      message_speed: RainSpeed::Slow,
     }
   }
 
@@ -161,6 +167,9 @@ impl Rain {
       bold_dim_effect: true,
       noise_interval: Duration::from_secs(1),
       character_set: CharacterSet::UnicodeRange { start: 0x7c, len: 1 },
+      message: String::from(""),
+      message_color: Color::Blue,
+      message_speed: RainSpeed::Slow,
     }
   }
 
@@ -178,6 +187,9 @@ impl Rain {
       bold_dim_effect: true,
       noise_interval: Duration::from_secs(1),
       character_set: CharacterSet::UnicodeRange { start: 0x2a, len: 1 },
+      message: String::from(""),
+      message_color: Color::Gray,
+      message_speed: RainSpeed::Slow,
     }
   }
 
@@ -197,6 +209,9 @@ impl Rain {
       bold_dim_effect: true,
       noise_interval: Duration::from_secs(1),
       character_set: CharacterSet::UnicodeRange { start: 0x1f600, len: 80 },
+      message: String::from(""),
+      message_color: Color::Yellow,
+      message_speed: RainSpeed::Slow,
     }
   }
 
@@ -216,6 +231,72 @@ impl Rain {
   /// ```
   pub fn with_seed(mut self, seed: u64) -> Rain {
     self.seed = seed;
+    self
+  }
+
+  /// Set the message to be displayed.
+  ///
+  /// The message will be displayed in the center of the screen.
+  ///
+  /// ```
+  /// use std::time::Duration;
+  /// use tui_rain::Rain;
+  ///
+  /// let elapsed = Duration::from_secs(5);
+  ///
+  /// Rain::new_matrix(elapsed)
+  ///    .with_message("Hello, World!");
+  /// ```
+  pub fn with_message(mut self, message: &str) -> Rain {
+    self.message = message.to_string();
+    self
+  }
+
+  /// Set the message color.
+  ///
+  /// The message color can be configured.
+  ///
+  /// ```
+  /// use std::time::Duration;
+  /// use tui_rain::Rain;
+  /// use ratatui::style::Color;
+  ///
+  /// let elapsed = Duration::from_secs(5);
+  ///
+  /// Rain::new_matrix(elapsed)
+  ///    .with_message_color(Color::Green);
+  /// ```
+  pub fn with_message_color(mut self, message_color: Color) -> Rain {
+    self.message_color = message_color;
+    self
+  }
+
+  /// Set the target speed for the message.
+  ///
+  /// Speed can be configured as an absolute value of pixels per second, or as a
+  /// preset.
+  ///
+  /// For an absolute speed in pixels per second:
+  ///
+  /// ```
+  /// use std::time::Duration;
+  /// use tui_rain::{Rain, RainSpeed};
+  ///
+  /// let elapsed = Duration::from_secs(5);
+  ///
+  /// Rain::new_matrix(elapsed)
+  ///     .with_message_speed(RainSpeed::Absolute {
+  ///         speed: 10.0,
+  ///     });
+  /// ```
+  ///
+  /// Preset options include:
+  ///
+  /// - `RainSpeed::Slow`
+  /// - `RainSpeed::Normal`
+  /// - `RainSpeed::Fast`
+  pub fn with_message_speed(mut self, message_speed: RainSpeed) -> Rain {
+    self.message_speed = message_speed;
     self
   }
 
@@ -466,6 +547,43 @@ impl Rain {
     Pcg64Mcg::seed_from_u64(self.seed)
   }
 
+  fn build_message(&self, entropy: f64, width: u16, height: u16) -> Vec<Message> {
+    let elapsed = self.elapsed.as_secs_f64();
+    let message_speed = self.message_speed.speed();
+    let mut messages: Vec<Message> = vec![];
+    let chunks: Vec<Vec<char>> = if self.message.is_empty() {
+      vec![]
+    } else {
+      split_into_chunks(self.message.as_str(), (width - 2) as usize)
+    };
+    let bounce_offset = entropy as i16;
+    let cycle_time_secs = (height / 2) as f64 / message_speed;
+    let initial_cycle_offset_secs = -1.0;
+    let current_cycle_offset_secs = (elapsed + initial_cycle_offset_secs) % cycle_time_secs;
+    let head_y = (current_cycle_offset_secs * message_speed) as u16;
+    //let drop_len = (chunks.len() as u16).min(height / 2);
+
+    for i in 0..chunks.len() {
+      let line = &chunks[i];
+      let x = (width - (line.len() - 1) as u16) / 2;
+      let y = if elapsed > (cycle_time_secs + 1.0) {
+        height / 2 + bounce_offset as u16 + i as u16
+      } else {
+        (head_y) % (height / 2) + i as u16
+      };
+
+      let style = Style::default().fg(self.message_color);
+      let message = Message {
+        x,
+        y,
+        content: line.clone(),
+        style,
+      };
+      messages.push(message);
+    }
+    messages
+  }
+
   /// Build a drop from the given consistent initial entropy state.
   ///
   /// The entropy vector's length becomes the drop's track length, so ensure it's at
@@ -608,11 +726,44 @@ impl Widget for Rain {
     // This is a moderate bottleneck when the screen is large / there's a lot of glyphs.
     glyphs.sort_by(|a, b| a.age.partial_cmp(&b.age).unwrap_or(Ordering::Equal));
 
+    // Render the message in the center of the screen.
+    let entropy = uniform(rng.next_u64(), -1.0, 1.0);
+    let messages: Vec<Message> = self.build_message(entropy, area.width, area.height);
+
+    //buf.reset();
     // Actually render to the buffer.
     for glyph in glyphs {
       buf[(glyph.x, glyph.y)].set_char(glyph.content);
       buf[(glyph.x, glyph.y)].set_style(glyph.style);
     }
+
+    // format debug messages
+    // let debug = format!(
+    //   "lines={}, l0={} {} {} l1={} {} {} l2={} {} {} l3={} {} {}",
+    //   &messages.len(),
+    //   &messages.get(0).unwrap().x,
+    //   &messages.get(0).unwrap().y,
+    //   &messages.get(0).unwrap().content.len(),
+    //   &messages.get(1).unwrap().x,
+    //   &messages.get(1).unwrap().y,
+    //   &messages.get(1).unwrap().content.len(),
+    //   &messages.get(2).unwrap().x,
+    //   &messages.get(2).unwrap().y,
+    //   &messages.get(2).unwrap().content.len(),
+    //   &messages.get(3).unwrap().x,
+    //   &messages.get(3).unwrap().y,
+    //   &messages.get(3).unwrap().content.len()
+    // );
+    for message in messages {
+      for i in 0..(message.content.len() as u16) {
+        buf[(message.x + i, message.y)].set_char(message.content.get(i as usize).unwrap().clone());
+        buf[(message.x + i, message.y)].set_style(message.style);
+      }
+    }
+
+    // for i in 0..(debug.len()) {
+    //   buf[(i as u16, 0)].set_char(debug.chars().nth(i).unwrap());
+    // }
   }
 }
 
@@ -625,7 +776,63 @@ struct Glyph {
   style: Style,
 }
 
+/// A message to be rendered on the screen.
+#[derive(Clone, PartialEq, Debug)]
+struct Message {
+  x: u16,
+  y: u16,
+  content: Vec<char>,
+  style: Style,
+}
+
 /// Map a uniform random u64 to a uniform random f64 in the range [lower, upper).
 fn uniform(seed: u64, lower: f64, upper: f64) -> f64 {
   (seed as f64 / u64::MAX as f64) * (upper - lower) + lower
+}
+
+/// Split a string into chunks of at most `max_length` characters.
+fn split_into_chunks(input: &str, max_length: usize) -> Vec<Vec<char>> {
+  if input.is_empty() {
+    vec![]
+  } else {
+    let mut too_long = false;
+    for line in input.lines() {
+      if line.chars().count() > max_length {
+        too_long = true;
+        break;
+      }
+    }
+    if !too_long {
+      let mut result = Vec::new();
+      for line in input.lines() {
+        result.push(line.chars().collect());
+      }
+      //println!("{:?}", result);
+      result
+    } else {
+      let cleaned_input = input.replace("\r\n", "").replace("\n", "");
+      let mut result = Vec::new();
+      let mut current_chunk = Vec::new();
+
+      for word in cleaned_input.split_whitespace() {
+        if current_chunk.len() + word.len() > max_length {
+          if !current_chunk.is_empty() {
+            result.push(current_chunk);
+            current_chunk = Vec::new();
+          }
+        }
+
+        if !current_chunk.is_empty() {
+          current_chunk.push(' ');
+        }
+        current_chunk.extend(word.chars());
+      }
+
+      if !current_chunk.is_empty() {
+        result.push(current_chunk);
+      }
+
+      result
+    }
+  }
 }

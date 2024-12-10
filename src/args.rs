@@ -1,6 +1,5 @@
 use clap::{Parser, ValueEnum};
 use ratatui::style::Color;
-use std::fmt;
 
 /// CLI wrapper around tui-rs to create terminal rain effects.
 #[derive(Parser, Debug)]
@@ -37,6 +36,18 @@ pub struct Args {
   /// Dim effect
   #[clap(short, long)]
   pub effect_dim: Option<bool>,
+
+  /// Message to display
+  #[clap(short, long)]
+  pub message: Option<String>,
+
+  /// Color of the message [black|red|green|yellow|blue|magenta|cyan|gray|darkgray|lightred|lightgreen|lightyellow|lightblue|lightmagenta|lightcyan|white]
+  #[clap(short = 'n', long)]
+  pub message_color: Option<Color>,
+
+  /// Message speed in pixels / second
+  #[clap(short = 'o', long)]
+  pub message_speed: Option<f64>,
 }
 
 impl Args {
@@ -50,6 +61,9 @@ impl Args {
         self.color.get_or_insert(Color::LightBlue);
         self.head_color.get_or_insert(Color::White);
         self.effect_dim.get_or_insert(true);
+        self.message_color.get_or_insert(Color::Blue);
+        self.message_speed.get_or_insert(2.0);
+        self.message.get_or_insert(String::from(""));
       }
       RainType::Matrix => {
         self.density.get_or_insert(50);
@@ -59,6 +73,9 @@ impl Args {
         self.color.get_or_insert(Color::LightGreen);
         self.head_color.get_or_insert(Color::White);
         self.effect_dim.get_or_insert(true);
+        self.message_color.get_or_insert(Color::Green);
+        self.message_speed.get_or_insert(2.0);
+        self.message.get_or_insert(String::from(""));
       }
       RainType::Snow => {
         self.density.get_or_insert(30);
@@ -68,6 +85,9 @@ impl Args {
         self.color.get_or_insert(Color::White);
         self.head_color.get_or_insert(Color::White);
         self.effect_dim.get_or_insert(true);
+        self.message_color.get_or_insert(Color::Gray);
+        self.message_speed.get_or_insert(2.0);
+        self.message.get_or_insert(String::from(""));
       }
       RainType::Data => {
         self.density.get_or_insert(70);
@@ -77,6 +97,9 @@ impl Args {
         self.color.get_or_insert(Color::LightBlue);
         self.head_color.get_or_insert(Color::White);
         self.effect_dim.get_or_insert(true);
+        self.message_color.get_or_insert(Color::Blue);
+        self.message_speed.get_or_insert(2.0);
+        self.message.get_or_insert(String::from(""));
       }
       RainType::Emoji => {
         self.density.get_or_insert(20);
@@ -86,6 +109,9 @@ impl Args {
         self.color.get_or_insert(Color::White);
         self.head_color.get_or_insert(Color::White);
         self.effect_dim.get_or_insert(true);
+        self.message_color.get_or_insert(Color::Yellow);
+        self.message_speed.get_or_insert(2.0);
+        self.message.get_or_insert(String::from(""));
       }
     }
   }
@@ -104,15 +130,4 @@ pub enum RainType {
   Data,
   /// Emoji effect
   Emoji,
-}
-impl fmt::Display for RainType {
-  fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-    match *self {
-      RainType::Rain => write!(f, "Rain"),
-      RainType::Matrix => write!(f, "Matrix"),
-      RainType::Snow => write!(f, "Snow"),
-      RainType::Data => write!(f, "Data"),
-      RainType::Emoji => write!(f, "Emoji"),
-    }
-  }
 }
