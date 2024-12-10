@@ -1,6 +1,6 @@
 # tui-rain-cli
 
-`tui-rain` is a CLI extension of the library crate `tui-rain`. This tool allows you to create and visualize rain-like effects in your terminal using the `tui-rain` library.
+`tui-rain-cli` is a CLI extension of the library crate `tui-rain`. This tool allows you to create and visualize rain-like effects in your terminal using the `tui-rain` library.
 
 ## Features
 
@@ -10,31 +10,54 @@
 
 ## Installation
 
-To install `tui-rain`, you need to have Rust and Cargo installed on your system. You can install the CLI tool using Cargo:
+To install `tui-rain-cli`, you need to have Rust and Cargo installed on your system. You can install the CLI tool using Cargo:
 
 ```sh
-cargo install tui-rain
+cargo install tui-rain-cli
 ```
 
 ## Usage
 
-Once installed, you can run `tui-rain` from your terminal:
+Once installed, you can run `tui-rain-cli` from your terminal:
 
 ```sh
-tui-rain
+tui-rain-cli
 ```
 
 ### Options
 
-- `-t, --type <TYPE>`: Set the type of animation: rain, matrix, snow, emoji (default: rain).
-- `-i, --intensity <INTENSITY>`: Set the intensity of the rain (default: 5).
-- `-s, --speed <SPEED>`: Set the speed of the rain (default: 1).
-- `-c, --color <COLOR>`: Set the color of the rain (default: depending on animation).
+```bash
+CLI wrapper around tui-rs to create terminal rain effects
+
+Usage: tui-rain-cli [OPTIONS]
+
+Options:
+  -t, --rain-type <RAIN_TYPE>
+          Type of rain effect [rain|matrix|snow|data|emoji] [default: rain] [possible values: rain, matrix, snow, data, emoji]
+  -d, --density <DENSITY>
+          Rain density computes the number of drops based on the frame size. Lower value is denser
+  -s, --speed <SPEED>
+          Rain speed in pixels / second
+  -v, --variance-speed <VARIANCE_SPEED>
+          Rain speed variance
+  -l, --lifespan-tail <LIFESPAN_TAIL>
+          Tail lifespan in milliseconds
+  -c, --color <COLOR>
+          Color of the rain [black|red|green|yellow|blue|magenta|cyan|gray|darkgray|lightred|lightgreen|lightyellow|lightblue|lightmagenta|lightcyan|white]
+  -k, --head-color <HEAD_COLOR>
+          Color of the rain [black|red|green|yellow|blue|magenta|cyan|gray|darkgray|lightred|lightgreen|lightyellow|lightblue|lightmagenta|lightcyan|white]
+  -e, --effect-dim <EFFECT_DIM>
+          Dim effect [possible values: true, false]
+  -h, --help
+          Print help (see more with '--help')
+  -V, --version
+          Print version
+```
 
 Example:
 
 ```sh
-tui-rain --intensity 10 --speed 2 --color green
+tui-rain-cli --intensity 10 --speed 2 --color green
 ```
 
 ## Contributing
@@ -43,7 +66,7 @@ Contributions are welcome! Please fork the repository and submit a pull request 
 
 ## License
 
-`tui-rain` is licensed under the MIT License. See the [LICENSE](LICENSE) file for more details.
+`tui-rain-cli` is licensed under the MIT License.
 
 ## Acknowledgements
 
