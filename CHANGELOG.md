@@ -2,11 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
-## [unreleased]
+## [0.2.0] - 2024-12-10
 
 ### 📚 Documentation
 
 - *(readme)* Update readme with current cli settings
+
+### ⚙️ Miscellaneous Tasks
+
+- *(config)* Bump crate version to v0.2.0
 
 ## [0.1.1] - 2024-12-10
 
