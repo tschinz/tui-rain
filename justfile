@@ -10,9 +10,10 @@ open := if os() == "linux" {
 } else {
   "start \"\" /max"
 }
+app_name := "tui-rain-cli"
 args := ""
 project_directory := justfile_directory()
-release := `git describe --tags`
+release := `git describe --tags --always`
 url := "https://github.com/tschinz/tui-rain-cli"
 ##################################################
 # COMMANDS
@@ -47,10 +48,30 @@ install-nightly:
 run args=args:
   cargo run -- {{args}}
 
+# Run the program with default snow
+snow:
+  cargo run -- -t snow
+
+# Run the program with default matrix
+matrix:
+    cargo run -- -t matrix
+
+# Run the program with default rain
+rain:
+  cargo run -- -t rain
+
+# Run the program with default emoji
+emoji:
+  cargo run -- -t emoji
+
+# Run the program with default data
+data:
+  cargo run -- -t data
+
 # Build and copy the release version of the program
 build:
   cargo build --release
-  mkdir -p bin && cp target/release/todo bin/
+  mkdir -p bin && cp target/release/{{app_name}} bin/
 
 # Run rustfmt with custom configuration
 rustfmt:

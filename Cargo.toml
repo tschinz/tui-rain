@@ -2,9 +2,12 @@
 name = "tui-rain-cli"
 version = "0.1.0"
 edition = "2021"
+authors = ["tschinz"]
+categories = ["cli", "command-line-utilities"]
+keywords = ["cli", "terminal", "rain", "effect"]
 
 [dependencies]
-clap = "4.5.23"
+clap = { version = "4.5.23", features = ["env", "derive"] }
 crossterm = { version = "0.28.1", features = ["event-stream"] }
 futures = "0.3.31"
 ratatui = "0.29.0"
