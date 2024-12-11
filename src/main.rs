@@ -34,6 +34,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
           .with_message(args.message.as_ref().unwrap().as_str())
           .with_message_color(args.message_color.unwrap())
           .with_message_speed(message_speed)
+          .with_verbose(args.verbose)
       }))
       .await
     }
@@ -50,6 +51,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
           .with_message(args.message.as_ref().unwrap_or(&String::from("")).as_str())
           .with_message_color(args.message_color.unwrap())
           .with_message_speed(message_speed)
+          .with_verbose(args.verbose)
       }))
       .await
     }
@@ -66,6 +68,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
           .with_message(args.message.as_ref().unwrap_or(&String::from("")).as_str())
           .with_message_color(args.message_color.unwrap())
           .with_message_speed(message_speed)
+          .with_verbose(args.verbose)
       }))
       .await
     }
@@ -83,6 +86,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
           .with_message(args.message.as_ref().unwrap_or(&String::from("")).as_str())
           .with_message_color(args.message_color.unwrap())
           .with_message_speed(message_speed)
+          .with_verbose(args.verbose)
       }))
       .await
     }
@@ -99,6 +103,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
           .with_message(args.message.as_ref().unwrap_or(&String::from("")).as_str())
           .with_message_color(args.message_color.unwrap())
           .with_message_speed(message_speed)
+          .with_verbose(args.verbose)
       }))
       .await
     }

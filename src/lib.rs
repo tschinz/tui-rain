@@ -130,6 +130,7 @@ pub struct Rain {
   message: String,
   message_color: Color,
   message_speed: RainSpeed,
+  verbose: bool,
 }
 
 impl Rain {
@@ -150,6 +151,7 @@ impl Rain {
       message: String::from(""),
       message_color: Color::Green,
       message_speed: RainSpeed::Slow,
+      verbose: false,
     }
   }
 
@@ -170,6 +172,7 @@ impl Rain {
       message: String::from(""),
       message_color: Color::Blue,
       message_speed: RainSpeed::Slow,
+      verbose: false,
     }
   }
 
@@ -190,6 +193,7 @@ impl Rain {
       message: String::from(""),
       message_color: Color::Gray,
       message_speed: RainSpeed::Slow,
+      verbose: false,
     }
   }
 
@@ -212,6 +216,7 @@ impl Rain {
       message: String::from(""),
       message_color: Color::Yellow,
       message_speed: RainSpeed::Slow,
+      verbose: false,
     }
   }
 
@@ -481,6 +486,24 @@ impl Rain {
     self
   }
 
+  /// Set whether to apply the verbose effect.
+  ///
+  /// By default, the verbose effect is disabled. This enables debug information on the screen
+  ///
+  /// ```
+  /// use std::time::Duration;
+  /// use tui_rain::Rain;
+  ///
+  /// let elapsed = Duration::from_secs(5);
+  ///
+  /// Rain::new_matrix(elapsed)
+  ///    .with_verbose(true);
+  /// ```
+  pub fn with_verbose(mut self, verbose: bool) -> Rain {
+    self.verbose = verbose;
+    self
+  }
+
   /// Set the interval between random character changes.
   ///
   /// A more subtle effect is that glyphs already rendered in a drop occasionally
@@ -547,7 +570,7 @@ impl Rain {
     Pcg64Mcg::seed_from_u64(self.seed)
   }
 
-  fn build_message(&self, entropy: f64, width: u16, height: u16) -> Vec<Message> {
+  fn build_message(&self, width: u16, height: u16) -> (Vec<Message>, String) {
     let elapsed = self.elapsed.as_secs_f64();
     let message_speed = self.message_speed.speed();
     let mut messages: Vec<Message> = vec![];
@@ -556,32 +579,40 @@ impl Rain {
     } else {
       split_into_chunks(self.message.as_str(), (width - 2) as usize)
     };
-    let bounce_offset = entropy as i16;
-    let cycle_time_secs = (height / 2) as f64 / message_speed;
-    let initial_cycle_offset_secs = -1.0;
-    let current_cycle_offset_secs = (elapsed + initial_cycle_offset_secs) % cycle_time_secs;
-    let head_y = (current_cycle_offset_secs * message_speed) as u16;
-    //let drop_len = (chunks.len() as u16).min(height / 2);
+    let message_len = chunks.len() as i16;
+    let initial_cycle_offset_secs = -message_len as f64 / message_speed;
+    let cycle_time_secs = (height / 2 + message_len as u16 + (message_len / 2) as u16) as f64 / message_speed;
+    let current_cycle_offset_secs = elapsed + initial_cycle_offset_secs - (message_len as f64 / 2.0);
+    let head_y = (current_cycle_offset_secs * message_speed) as i16;
+
+    let debug = format!(
+      "mgs_len:{} offset:{} cycle_time:{} head_y:{} speed:{} current_offset:{:.2} elapsed:{:.2}",
+      message_len, initial_cycle_offset_secs, cycle_time_secs, head_y, message_speed, current_cycle_offset_secs, elapsed
+    );
 
     for i in 0..chunks.len() {
       let line = &chunks[i];
-      let x = (width - (line.len() - 1) as u16) / 2;
-      let y = if elapsed > (cycle_time_secs + 1.0) {
-        height / 2 + bounce_offset as u16 + i as u16
+      let x = (width - (line.len()) as u16) / 2;
+
+      let y: i16 = if elapsed > cycle_time_secs {
+        height as i16 / 2 as i16 + i as i16 - (message_len / 2)
       } else {
-        (head_y) % (height / 2) + i as u16
+        (head_y) + i as i16
       };
 
       let style = Style::default().fg(self.message_color);
+      if y < 0 || y >= height as i16 {
+        continue;
+      }
       let message = Message {
         x,
-        y,
+        y: y as u16,
         content: line.clone(),
         style,
       };
       messages.push(message);
     }
-    messages
+    (messages, debug)
   }
 
   /// Build a drop from the given consistent initial entropy state.
@@ -727,8 +758,7 @@ impl Widget for Rain {
     glyphs.sort_by(|a, b| a.age.partial_cmp(&b.age).unwrap_or(Ordering::Equal));
 
     // Render the message in the center of the screen.
-    let entropy = uniform(rng.next_u64(), -1.0, 1.0);
-    let messages: Vec<Message> = self.build_message(entropy, area.width, area.height);
+    let (messages, debug) = self.build_message(area.width, area.height);
 
     //buf.reset();
     // Actually render to the buffer.
@@ -737,23 +767,6 @@ impl Widget for Rain {
       buf[(glyph.x, glyph.y)].set_style(glyph.style);
     }
 
-    // format debug messages
-    // let debug = format!(
-    //   "lines={}, l0={} {} {} l1={} {} {} l2={} {} {} l3={} {} {}",
-    //   &messages.len(),
-    //   &messages.get(0).unwrap().x,
-    //   &messages.get(0).unwrap().y,
-    //   &messages.get(0).unwrap().content.len(),
-    //   &messages.get(1).unwrap().x,
-    //   &messages.get(1).unwrap().y,
-    //   &messages.get(1).unwrap().content.len(),
-    //   &messages.get(2).unwrap().x,
-    //   &messages.get(2).unwrap().y,
-    //   &messages.get(2).unwrap().content.len(),
-    //   &messages.get(3).unwrap().x,
-    //   &messages.get(3).unwrap().y,
-    //   &messages.get(3).unwrap().content.len()
-    // );
     for message in messages {
       for i in 0..(message.content.len() as u16) {
         buf[(message.x + i, message.y)].set_char(message.content.get(i as usize).unwrap().clone());
@@ -761,9 +774,11 @@ impl Widget for Rain {
       }
     }
 
-    // for i in 0..(debug.len()) {
-    //   buf[(i as u16, 0)].set_char(debug.chars().nth(i).unwrap());
-    // }
+    if self.verbose {
+      for i in 0..(debug.len()) {
+        buf[(i as u16, 0)].set_char(debug.chars().nth(i).unwrap());
+      }
+    }
   }
 }
 

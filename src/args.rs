@@ -2,11 +2,12 @@ use clap::{Parser, ValueEnum};
 use ratatui::style::Color;
 
 /// CLI wrapper around tui-rs to create terminal rain effects.
+/// Added message functionality for a more festive touch.
 #[derive(Parser, Debug)]
 #[clap(author, version, about)]
 pub struct Args {
   /// Type of rain effect [rain|matrix|snow|data|emoji]
-  #[clap(short='t', long, default_value_t = RainType::Rain, value_enum)]
+  #[clap(short='t', long, default_value_t = RainType::Snow, value_enum)]
   pub rain_type: RainType,
 
   /// Rain density computes the number of drops based on the frame size. Lower value is denser.
@@ -18,7 +19,7 @@ pub struct Args {
   pub speed: Option<f64>,
 
   /// Rain speed variance
-  #[clap(short, long)]
+  #[clap(short = 'S', long)]
   pub variance_speed: Option<f64>,
 
   /// Tail lifespan in milliseconds
@@ -48,6 +49,10 @@ pub struct Args {
   /// Message speed in pixels / second
   #[clap(short = 'o', long)]
   pub message_speed: Option<f64>,
+
+  /// Verbose mode
+  #[clap(short, long, default_value_t = false)]
+  pub verbose: bool,
 }
 
 impl Args {

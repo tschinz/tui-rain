@@ -7,6 +7,7 @@
 - **Rain Simulation**: Generate and display rain effects directly in your terminal.
 - **Customizable**: Adjust the intensity, speed, and appearance of the rain.
 - **Lightweight**: Minimal dependencies and easy to install.
+- **Message Display**: Add a festive touch by displaying a custom message in the rain.
 
 ## Installation
 
@@ -27,18 +28,18 @@ tui-rain-cli
 ### Options
 
 ```bash
-CLI wrapper around tui-rs to create terminal rain effects
+CLI wrapper around tui-rs to create terminal rain effects. Added message functionality for a more festive touch
 
 Usage: tui-rain-cli [OPTIONS]
 
 Options:
   -t, --rain-type <RAIN_TYPE>
-          Type of rain effect [rain|matrix|snow|data|emoji] [default: rain] [possible values: rain, matrix, snow, data, emoji]
+          Type of rain effect [rain|matrix|snow|data|emoji] [default: snow] [possible values: rain, matrix, snow, data, emoji]
   -d, --density <DENSITY>
           Rain density computes the number of drops based on the frame size. Lower value is denser
   -s, --speed <SPEED>
           Rain speed in pixels / second
-  -v, --variance-speed <VARIANCE_SPEED>
+  -S, --variance-speed <VARIANCE_SPEED>
           Rain speed variance
   -l, --lifespan-tail <LIFESPAN_TAIL>
           Tail lifespan in milliseconds
@@ -48,6 +49,14 @@ Options:
           Color of the rain [black|red|green|yellow|blue|magenta|cyan|gray|darkgray|lightred|lightgreen|lightyellow|lightblue|lightmagenta|lightcyan|white]
   -e, --effect-dim <EFFECT_DIM>
           Dim effect [possible values: true, false]
+  -m, --message <MESSAGE>
+          Message to display
+  -n, --message-color <MESSAGE_COLOR>
+          Color of the message [black|red|green|yellow|blue|magenta|cyan|gray|darkgray|lightred|lightgreen|lightyellow|lightblue|lightmagenta|lightcyan|white]
+  -o, --message-speed <MESSAGE_SPEED>
+          Message speed in pixels / second
+  -v, --verbose
+          Verbose mode
   -h, --help
           Print help (see more with '--help')
   -V, --version
@@ -57,7 +66,7 @@ Options:
 Example:
 
 ```sh
-tui-rain-cli --intensity 10 --speed 2 --color green
+tui-rain-cli -t rain -d 50 -s 2 -c cyan -k lightcyan -e true -m 'Hello, World!' -n yellow -o 1
 ```
 
 ## Changelog
