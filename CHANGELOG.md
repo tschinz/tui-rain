@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.2.1] - 2024-12-11
+
+### 💼 Other
+
+- *(config)* Bump version
+
+### ⚙️ Miscellaneous Tasks
+
+- *(changelog)* Update changelog
+
 ## [0.2.0] - 2024-12-10
 
 ### 📚 Documentation
