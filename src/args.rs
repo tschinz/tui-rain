@@ -68,7 +68,9 @@ impl Args {
         self.effect_dim.get_or_insert(true);
         self.message_color.get_or_insert(Color::Blue);
         self.message_speed.get_or_insert(2.0);
-        self.message.get_or_insert(String::from(""));
+        self.message.get_or_insert(String::from(
+          "🎄  Season’s Greetings from SPL! 🎄\n\nThank you for your trust and collaboration this year.\n\nWe wish you a joyful holiday season 🎄\nand a successful start to the new year 🌟.\n\nLooking forward to more innovation together in 2025! 🚀\n\n- The Smart Process Lab Team -",
+        ));
       }
       RainType::Matrix => {
         self.density.get_or_insert(50);
@@ -80,7 +82,9 @@ impl Args {
         self.effect_dim.get_or_insert(true);
         self.message_color.get_or_insert(Color::Green);
         self.message_speed.get_or_insert(2.0);
-        self.message.get_or_insert(String::from(""));
+        self.message.get_or_insert(String::from(
+          "🎄  Season’s Greetings from SPL! 🎄\n\nThank you for your trust and collaboration this year.\n\nWe wish you a joyful holiday season 🎄\nand a successful start to the new year 🌟.\n\nLooking forward to more innovation together in 2025! 🚀\n\n- The Smart Process Lab Team -",
+        ));
       }
       RainType::Snow => {
         self.density.get_or_insert(30);
@@ -92,7 +96,9 @@ impl Args {
         self.effect_dim.get_or_insert(true);
         self.message_color.get_or_insert(Color::Gray);
         self.message_speed.get_or_insert(2.0);
-        self.message.get_or_insert(String::from(""));
+        self.message.get_or_insert(String::from(
+          "🎄  Season’s Greetings from SPL! 🎄\n\nThank you for your trust and collaboration this year.\n\nWe wish you a joyful holiday season 🎄\nand a successful start to the new year 🌟.\n\nLooking forward to more innovation together in 2025! 🚀\n\n- The Smart Process Lab Team -",
+        ));
       }
       RainType::Data => {
         self.density.get_or_insert(70);
@@ -104,7 +110,9 @@ impl Args {
         self.effect_dim.get_or_insert(true);
         self.message_color.get_or_insert(Color::Blue);
         self.message_speed.get_or_insert(2.0);
-        self.message.get_or_insert(String::from(""));
+        self.message.get_or_insert(String::from(
+          "🎄  Season’s Greetings from SPL! 🎄\n\nThank you for your trust and collaboration this year.\n\nWe wish you a joyful holiday season 🎄\nand a successful start to the new year 🌟.\n\nLooking forward to more innovation together in 2025! 🚀\n\n- The Smart Process Lab Team -",
+        ));
       }
       RainType::Emoji => {
         self.density.get_or_insert(20);
@@ -116,7 +124,9 @@ impl Args {
         self.effect_dim.get_or_insert(true);
         self.message_color.get_or_insert(Color::Yellow);
         self.message_speed.get_or_insert(2.0);
-        self.message.get_or_insert(String::from(""));
+        self.message.get_or_insert(String::from(
+          "🎄  Season’s Greetings from SPL! 🎄\n\nThank you for your trust and collaboration this year.\n\nWe wish you a joyful holiday season 🎄\nand a successful start to the new year 🌟.\n\nLooking forward to more innovation together in 2025! 🚀\n\n- The Smart Process Lab Team -",
+        ));
       }
     }
   }

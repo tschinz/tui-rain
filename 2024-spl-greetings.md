@@ -1,0 +1,1 @@
+🎄  Season’s Greetings from SPL! 🎄\n\nThank you for your trust and collaboration this year.\n\nWe wish you a joyful holiday season 🎄\nand a successful start to the new year 🌟.\n\nLooking forward to more innovation together in 2025! 🚀\n\n- The Smart Process Lab Team -
